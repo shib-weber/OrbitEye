@@ -16,7 +16,7 @@ app = FastAPI(title="OrbitEye API", version="4.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*","https://client-six-alpha-50.vercel.app",],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
