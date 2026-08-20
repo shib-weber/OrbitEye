@@ -43,7 +43,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 
-const API_BASE = "http://127.0.0.1:8000/api";
+const API_BASE =  import.meta.env.VITE_API_BASE_URL || "https://orbiteye-s38k.onrender.com/api";;
 
 function MapClickHandler({ onLocationChange }) {
   useMapEvents({
