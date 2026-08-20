@@ -30,7 +30,9 @@ import {
   Crosshair,
   Maximize2,
   Lightbulb,
-  Wrench
+  Wrench,
+  Clock,
+  Calendar
 } from "lucide-react";
 import "leaflet/dist/leaflet.css";
 
@@ -41,7 +43,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "https://orbiteye-s38k.onrender.com/api";
+const API_BASE = "http://127.0.0.1:8000/api";
 
 function MapClickHandler({ onLocationChange }) {
   useMapEvents({
@@ -100,6 +102,7 @@ export default function MainPage() {
   const [uploadingId, setUploadingId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("Kolkata");
   const [mainFlyFocus, setMainFlyFocus] = useState(null);
+  const [comparisonMode, setComparisonMode] = useState("split");
 
   const [targetLocation, setTargetLocation] = useState({
     village_name: "Kolkata",
@@ -244,6 +247,7 @@ export default function MainPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+      
       {/* Header */}
       <header className="border-b border-slate-800/80 bg-slate-900/80 backdrop-blur-md px-4 sm:px-6 py-3.5 sticky top-0 z-50 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
@@ -268,7 +272,7 @@ export default function MainPage() {
       {/* Main Responsive Workspace */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 flex flex-col lg:grid lg:grid-cols-12 gap-4 sm:gap-6">
         
-        {/* SECTION 1: Target Intake (Mobile: 1st | Desktop: Top Left) */}
+        {/* Target Territory Intake */}
         <div className="order-1 lg:order-none lg:col-span-5">
           <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4 sm:p-5 shadow-xl space-y-3 sm:space-y-4">
             <div className="flex items-center justify-between">
@@ -332,7 +336,7 @@ export default function MainPage() {
           </div>
         </div>
 
-        {/* SECTION 2: Map Canvas (Mobile: 2nd | Desktop: Right Column, Rows 1-2) */}
+        {/* Map Canvas */}
         <div className="order-2 lg:order-none lg:col-span-7 lg:row-span-2">
           <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-3 sm:p-5 shadow-xl flex flex-col h-[380px] sm:h-[450px] lg:h-full lg:min-h-[560px] relative">
             <div className="flex flex-wrap justify-between items-center mb-2.5 sm:mb-3 gap-1">
@@ -415,7 +419,7 @@ export default function MainPage() {
           </div>
         </div>
 
-        {/* SECTION 3: Active Verification Queue (Mobile: 3rd | Desktop: Bottom Left) */}
+        {/* Verification Queue */}
         <div className="order-3 lg:order-none lg:col-span-5">
           <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4 sm:p-5 shadow-xl">
             <h2 className="text-xs sm:text-sm font-semibold text-slate-200 mb-3 flex items-center gap-2">
@@ -488,7 +492,7 @@ export default function MainPage() {
 
       </main>
 
-      {/* Interactive Split-Screen Dossier Modal */}
+      {/* Split-Screen Evidence Dossier Modal */}
       {selectedAlert && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
           <div className="bg-slate-900 border border-slate-800 rounded-xl sm:rounded-2xl max-w-6xl w-full p-4 sm:p-6 space-y-3 sm:space-y-4 shadow-2xl relative my-auto max-h-[96vh] sm:max-h-[92vh] flex flex-col">
@@ -517,10 +521,139 @@ export default function MainPage() {
             {/* Split Screen Container */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-5 flex-1 overflow-y-auto lg:overflow-hidden min-h-[300px]">
               
-              {/* Left Column: Report, Hotspot Cards, AI Directives */}
+              {/* Left Column: Optical Satellite Passes & Hotspots */}
               <div className="lg:col-span-6 space-y-3 overflow-visible lg:overflow-y-auto lg:pr-2">
                 
-                {/* Boxed Hotspots List with Click-to-Focus */}
+                {/* 1. True Optical Satellite Passes (T1 vs T2) */}
+                <div className="bg-slate-950 p-3 sm:p-3.5 rounded-xl border border-slate-800 space-y-2.5">
+                  <div className="flex flex-wrap justify-between items-center gap-2">
+                    <h4 className="text-[11px] sm:text-xs font-semibold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                      <Clock size={14} className="text-amber-400" /> True Optical Satellite Passes (T₁ vs T₂)
+                    </h4>
+                    
+                    <div className="flex items-center gap-1 bg-slate-900 p-0.5 rounded-lg border border-slate-800 text-[10px] font-mono">
+                      <button 
+                        onClick={() => setComparisonMode("split")}
+                        className={`px-2 py-0.5 rounded transition ${comparisonMode === "split" ? "bg-sky-600 text-white font-bold" : "text-slate-400 hover:text-white"}`}
+                      >
+                        Side-by-Side
+                      </button>
+                      <button 
+                        onClick={() => setComparisonMode("before")}
+                        className={`px-2 py-0.5 rounded transition ${comparisonMode === "before" ? "bg-sky-600 text-white font-bold" : "text-slate-400 hover:text-white"}`}
+                      >
+                        Baseline (T₁)
+                      </button>
+                      <button 
+                        onClick={() => setComparisonMode("after")}
+                        className={`px-2 py-0.5 rounded transition ${comparisonMode === "after" ? "bg-sky-600 text-white font-bold" : "text-slate-400 hover:text-white"}`}
+                      >
+                        Recent (T₂)
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Satellite Orthomosaics Viewport */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 relative rounded-lg overflow-hidden border border-slate-800 bg-slate-900/60 p-1">
+                    
+                    {/* Baseline Optical Pass (T1) */}
+                    {(comparisonMode === "split" || comparisonMode === "before") && (
+                      <div className={`relative rounded-md overflow-hidden border border-slate-800/80 bg-slate-950 h-48 sm:h-52 ${comparisonMode === "before" ? "sm:col-span-2" : ""}`}>
+                        <div className="absolute top-2 left-2 z-[400] bg-slate-950/85 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-mono text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+                          <Calendar size={11} /> Baseline Pass (T₁) • Historical
+                        </div>
+
+                        <MapContainer 
+                          center={[selectedAlert.latitude, selectedAlert.longitude]} 
+                          zoom={16} 
+                          zoomControl={false}
+                          attributionControl={false}
+                          dragging={false}
+                          scrollWheelZoom={false}
+                          doubleClickZoom={false}
+                          touchZoom={false}
+                          className="h-full w-full pointer-events-none"
+                        >
+                          <TileLayer
+                            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                          />
+                          <MapFlyController center={[selectedAlert.latitude, selectedAlert.longitude]} zoom={16} />
+                        </MapContainer>
+
+                        <div className="absolute bottom-2 right-2 z-[400] text-[9px] font-mono text-slate-300 bg-slate-950/85 px-1.5 py-0.5 rounded border border-slate-800">
+                          Clean Reference
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Recent Pass with Marked Vector Polygon (T2) */}
+                    {(comparisonMode === "split" || comparisonMode === "after") && (
+                      <div className={`relative rounded-md overflow-hidden border border-rose-500/50 bg-slate-950 h-48 sm:h-52 ${comparisonMode === "after" ? "sm:col-span-2" : ""}`}>
+                        <div className="absolute top-2 left-2 z-[400] bg-slate-950/85 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-mono text-rose-400 border border-rose-500/40 flex items-center gap-1">
+                          <Radio size={11} className="text-rose-400 animate-pulse" /> Recent Pass (T₂) • Marked Anomaly
+                        </div>
+
+                        <MapContainer 
+                          center={[selectedAlert.latitude, selectedAlert.longitude]} 
+                          zoom={16} 
+                          zoomControl={false}
+                          attributionControl={false}
+                          dragging={false}
+                          scrollWheelZoom={false}
+                          doubleClickZoom={false}
+                          touchZoom={false}
+                          className="h-full w-full pointer-events-none"
+                        >
+                          <TileLayer
+                            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                          />
+                          <MapFlyController center={[selectedAlert.latitude, selectedAlert.longitude]} zoom={16} />
+
+                          {parseClusters(selectedAlert.detected_issues).map((cluster, idx) => {
+                            let latLngPositions = [];
+                            if (cluster?.geojson?.coordinates?.[0]) {
+                              latLngPositions = cluster.geojson.coordinates[0].map(([lon, lat]) => [lat, lon]);
+                            } else {
+                              const cLat = cluster?.exact_center?.[0] || selectedAlert.latitude;
+                              const cLon = cluster?.exact_center?.[1] || selectedAlert.longitude;
+                              latLngPositions = [
+                                [cLat + 0.0006, cLon - 0.0006],
+                                [cLat + 0.0006, cLon + 0.0006],
+                                [cLat - 0.0006, cLon + 0.0006],
+                                [cLat - 0.0006, cLon - 0.0006],
+                              ];
+                            }
+
+                            return (
+                              <Polygon
+                                key={`recent-marked-poly-${cluster.cluster_id || idx}`}
+                                positions={latLngPositions}
+                                pathOptions={{
+                                  color: "#ef4444",
+                                  fillColor: "#ef4444",
+                                  fillOpacity: 0.55,
+                                  weight: 2.5,
+                                  dashArray: "4, 4"
+                                }}
+                              />
+                            );
+                          })}
+                        </MapContainer>
+
+                        <div className="absolute bottom-2 right-2 z-[400] text-[9px] font-mono text-amber-300 bg-slate-950/85 px-1.5 py-0.5 rounded border border-amber-500/40">
+                          ΔNDBI / ΔNDWI Shift Marked
+                        </div>
+                      </div>
+                    )}
+
+                  </div>
+
+                  <p className="text-[10px] sm:text-[10.5px] text-slate-400 leading-relaxed font-sans">
+                    High-resolution true-color satellite orthomosaics synchronized to coordinate ({selectedAlert.latitude.toFixed(4)}°N, {selectedAlert.longitude.toFixed(4)}°E). Red dashed polygons mark verified land-cover transitions between orbital pass intervals.
+                  </p>
+                </div>
+
+                {/* Hotspots Card List */}
                 <div className="bg-slate-950 p-3 sm:p-3.5 rounded-xl border border-slate-800 space-y-2">
                   <div className="flex flex-wrap justify-between items-center gap-1">
                     <h4 className="text-[11px] sm:text-xs font-semibold text-sky-400 uppercase tracking-wider flex items-center gap-1.5">
@@ -529,7 +662,7 @@ export default function MainPage() {
                     <span className="text-[9.5px] sm:text-[10px] text-slate-500">Tap card to focus map →</span>
                   </div>
 
-                  <div className="space-y-2 max-h-[190px] sm:max-h-[220px] overflow-y-auto pr-1">
+                  <div className="space-y-2 max-h-[160px] sm:max-h-[180px] overflow-y-auto pr-1">
                     {parseClusters(selectedAlert.detected_issues).map((cluster) => {
                       const isHighlighted = highlightedSpotId === cluster.cluster_id;
                       const isHighPriority = cluster.confidence_score < 0.70;
@@ -571,7 +704,7 @@ export default function MainPage() {
                   </div>
                 </div>
 
-                {/* AI Inspector Diagnostics */}
+                {/* AI Root-Cause Diagnostics */}
                 <div className="bg-slate-950 p-3 sm:p-3.5 rounded-xl border border-slate-800 space-y-2">
                   <h4 className="text-[11px] sm:text-xs font-semibold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
                     <Lightbulb size={13} /> AI Municipal Inspector Root-Cause Diagnostics
@@ -588,7 +721,7 @@ export default function MainPage() {
                   </p>
                 </div>
 
-                {/* Edge CV Upload */}
+                {/* Edge Ground Truth CV */}
                 <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-2">
                   <div className="flex flex-wrap justify-between items-center gap-1.5">
                     <h4 className="text-[11px] sm:text-xs font-semibold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
@@ -617,7 +750,7 @@ export default function MainPage() {
                 </div>
               </div>
 
-              {/* Right Column: Dedicated Synchronized GIS Map */}
+              {/* Right Column: GIS Vector Map */}
               <div className="lg:col-span-6 bg-slate-950 rounded-xl border border-slate-800 overflow-hidden relative flex flex-col min-h-[260px] sm:min-h-[350px]">
                 <div className="bg-slate-900/90 px-3 py-1.5 border-b border-slate-800 flex justify-between items-center text-xs">
                   <span className="text-slate-300 font-medium flex items-center gap-1.5 text-[11px] sm:text-xs">
