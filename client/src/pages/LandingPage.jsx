@@ -98,7 +98,7 @@ function useSolarPanelTexture() {
         ctx.beginPath();
         ctx.moveTo(x, y + h); ctx.lineTo(x + chamfer, y + h); ctx.lineTo(x, y + h - chamfer); ctx.fill();
         ctx.beginPath();
-        ctx.moveTo(x + w, y + h); ctx.lineTo(x + w - chamfer, y + h); ctx.lineTo(x + w, y + h - chamfer); ctx.fill();
+        ctx.moveTo(x + w, y + h); ctx.lineTo(x + w - chamfer, y + h); ctx.lineTo(x + w, y + chamfer); ctx.fill();
 
         // Silver Busbars
         ctx.strokeStyle = "#e2e8f0";
@@ -130,10 +130,22 @@ function useSolarPanelTexture() {
   }, []);
 }
 
-// --- Glassy Solar Wing Assembly ---
+// --- Bifacial / Double-Sided Photorealistic Solar Wing Assembly ---
 
 function PhotorealisticSolarWing({ isRight = false, solarTex }) {
   const dir = isRight ? 1 : -1;
+
+  const solarMaterialProps = {
+    map: solarTex,
+    color: "#ffffff",
+    metalness: 0.6,
+    roughness: 0.02,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.01,
+    reflectivity: 1.0,
+    envMapIntensity: 3.5,
+    side: THREE.DoubleSide
+  };
 
   return (
     <group position={[0, 0, 0]}>
@@ -149,26 +161,22 @@ function PhotorealisticSolarWing({ isRight = false, solarTex }) {
         <meshPhysicalMaterial color="#ffffff" metalness={0.95} roughness={0.1} clearcoat={1.0} />
       </mesh>
 
-      {/* Photovoltaic Array Wing */}
+      {/* Double-Sided Photovoltaic Array Wing */}
       <group position={[dir * 2.35, 0, 0]}>
-        {/* Specular Coated Silicon Glass Surface */}
-        <mesh position={[0, 0, 0.005]}>
-          <boxGeometry args={[2.5, 0.88, 0.015]} />
-          <meshPhysicalMaterial
-            map={solarTex}
-            color="#ffffff"
-            metalness={0.6}
-            roughness={0.02}
-            clearcoat={1.0}
-            clearcoatRoughness={0.01}
-            reflectivity={1.0}
-            envMapIntensity={3.5}
-            side={THREE.DoubleSide}
-          />
+        {/* Front Silicon Glass Face */}
+        <mesh position={[0, 0, 0.011]}>
+          <planeGeometry args={[2.5, 0.88]} />
+          <meshPhysicalMaterial {...solarMaterialProps} />
         </mesh>
 
-        {/* Outer Titanium Rim */}
-        <mesh position={[0, 0, -0.005]}>
+        {/* Back Silicon Glass Face (Rotated 180° so reverse side is identical) */}
+        <mesh position={[0, 0, -0.011]} rotation={[0, Math.PI, 0]}>
+          <planeGeometry args={[2.5, 0.88]} />
+          <meshPhysicalMaterial {...solarMaterialProps} />
+        </mesh>
+
+        {/* Central Core Framing & Protective Rim */}
+        <mesh position={[0, 0, 0]}>
           <boxGeometry args={[2.54, 0.92, 0.02]} />
           <meshPhysicalMaterial color="#334155" metalness={0.8} roughness={0.3} />
         </mesh>
@@ -373,7 +381,7 @@ function PhotorealisticSatellite({ scrollProgress, isMobile }) {
             map={aluTex} 
             bumpMap={aluTex} 
             bumpScale={0.05} 
-            color="#f9f9f1" 
+            color="#f1f5f9" 
             metalness={0.98} 
             roughness={0.12} 
             clearcoat={1.0}
