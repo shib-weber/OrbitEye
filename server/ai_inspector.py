@@ -37,11 +37,12 @@ def generate_inspector_dossier(village: str, ward: str, lat: float, lon: float, 
     4. "risk_level": One of ["CRITICAL", "HIGH", "MODERATE", "LOW"].
     """
 
+# If package is installed and key is provided, execute Gemini API call
     if GEMINI_KEY:
         try:
             client = genai.Client(api_key=GEMINI_KEY)
             response = client.models.generate_content(
-                model='gemini-2.5-flash',
+                model='gemini-3.6-flash',
                 contents=prompt,
                 config={
                     'response_mime_type': 'application/json'
@@ -49,7 +50,7 @@ def generate_inspector_dossier(village: str, ward: str, lat: float, lon: float, 
             )
             return json.loads(response.text)
         except Exception as e:
-            print(f"Gemini API error (fallback triggered): {e}")
+            print(f"Gemini API execution error (falling back to offline reasoning): {e}")
 
     # Robust local reasoning fallback
     is_critical = any(
